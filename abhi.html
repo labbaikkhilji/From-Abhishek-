@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Forever Starts Today</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #070206;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: #ffffff;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* SCREEN 1: INTRO */
+        #openingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #150512 0%, #050105 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: all 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .intro-title {
+            font-size: 1.6rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+            text-align: center;
+            padding: 0 24px;
+            line-height: 1.6;
+            text-transform: uppercase;
+            animation: pulseGlow 3s infinite ease-in-out;
+        }
+
+        .enter-btn {
+            background: #ff4b72;
+            color: #fff;
+            border: none;
+            padding: 14px 40px;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 75, 114, 0.4);
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* SCREEN 2: PROPOSAL */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            width: 92%;
+            max-width: 460px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+            display: none;
+        }
+
+        .proposal-card {
+            background: rgba(15, 6, 13, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            border-radius: 28px;
+            padding: 2.5rem 1.8rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .poetic-text {
+            font-size: 1.05rem;
+            color: #d4c5d0;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            min-height: 100px;
+            font-weight: 300;
+        }
+
+        .proposal-question {
+            font-size: 1.6rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #ffffff 0%, #ffbccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2.5rem;
+            line-height: 1.4;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        /* STABLE BUTTONS FOR MOBILE */
+        .btn-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .action-btn {
+            flex: 1;
+            max-width: 180px;
+            padding: 14px 0;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #yesBtn {
+            background: linear-gradient(135deg, #ff4b72 0%, #d9264c 100%);
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(255, 75, 114, 0.35);
+        }
+
+        #noBtn {
+            background: rgba(255, 255, 255, 0.08);
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        /* POPUP MODAL FOR NO */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #1a0b16;
+            border: 1px solid #ff4b72;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 320px;
+            width: 85%;
+        }
+        .modal-content p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        .modal-close {
+            background: #ff4b72;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* SCREEN 3: ENDING */
+        #endingScreen {
+            display: none;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+            text-align: center;
+        }
+
+        .ring-box {
+            font-size: 4.5rem;
+            margin-bottom: 1.5rem;
+            animation: floatRing 4s infinite ease-in-out;
+        }
+
+        .ending-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff4b72 0%, #ff9ebb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+        }
+
+        .vow-text {
+            font-size: 1.1rem;
+            color: #e6e6e6;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; text-shadow: 0 0 15px rgba(255, 75, 114, 0.4); }
+        }
+
+        @keyframes floatRing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="starfield"></canvas>
+
+    <div id="openingScreen">
+        <h2 class="intro-title">In a world full of temporary things...<br>I want something permanent.</h2>
+        <button class="enter-btn" onclick="startExperience()">Open My Heart</button>
+    </div>
+
+    <div class="main-container" id="proposalContainer">
+        <div class="proposal-card">
+            <div id="textSequence" class="poetic-text"></div>
+            <h1 class="proposal-question" id="finalQuestion">Will you stand by me, through every rhythm of life, as my lifetime partner?</h1>
+            
+            <div class="btn-wrapper">
+                <button class="action-btn" id="yesBtn" onclick="revealEnding()">Yes, Forever</button>
+                <button class="action-btn" id="noBtn" onclick="handleNoClick()">No</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="noModal">
+        <div class="modal-content">
+            <p>⚠️ Error: That option is unavailable because we are destined to be together. Try again! 😉</p>
+            <button class="modal-close" onclick="closeModal()">Try Again</button>
+        </div>
+    </div>
+
+    <div class="main-container" id="endingScreen">
+        <div class="ring-box">💍</div>
+        <h2 class="ending-title">Locking it in for Eternity.</h2>
+        <p class="vow-text">
+            From this day forward, you don't have to walk alone. Through the highs, the lows, the silence, and the noise—I promise you my loyalty, my respect, and a love that only grows. 
+            <br><br>
+            <span style="color: #ff4b72; font-weight: 600;">It's you and me against the world. ❤️</span>
+        </p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(isCelebration = false) {
+                this.isCelebration = isCelebration;
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = this.isCelebration ? canvas.height + 10 : Math.random() * canvas.height;
+                this.size = Math.random() * (this.isCelebration ? 4 : 2) + 1;
+                this.speedY = this.isCelebration ? -(Math.random() * 4 + 2) : -(Math.random() * 0.5 + 0.2);
+                this.speedX = (Math.random() - 0.5) * (this.isCelebration ? 2 : 0.3);
+                this.hue = this.isCelebration ? (Math.random() > 0.5 ? 345 : 20) : 0;
+                this.alpha = Math.random() * 0.5 + 0.5;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                if (this.y < -10) this.reset();
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.isCelebration ? `hsla(${this.hue}, 100%, 65%, ${this.alpha})` : `rgba(255, 255, 255, ${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        for(let i=0; i<40; i++) particles.push(new Particle(false));
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // FIXED ACTION - NO AUDIO FREEZING
+        function startExperience() {
+            const opening = document.getElementById('openingScreen');
+            opening.style.opacity = '0';
+            setTimeout(() => {
+                opening.style.display = 'none';
+                const container = document.getElementById('proposalContainer');
+                container.style.display = 'block';
+                setTimeout(() => {
+                    container.style.opacity = '1';
+                    typeWriterEffect();
+                }, 50);
+            }, 800);
+        }
+
+        const poeticParagraph = "I’ve looked at lines, shapes, and art, searching for what perfection looks like. But truth is, nothing compares to the way my world simplifies when you're in it. I don't just want a moment with you; I want every chapter.";
+        let index = 0;
+
+        function typeWriterEffect() {
+            if (index < poeticParagraph.length) {
+                document.getElementById('textSequence').innerHTML += poeticParagraph.charAt(index);
+                index++;
+                setTimeout(typeWriterEffect, 25);
+            } else {
+                document.getElementById('finalQuestion').style.opacity = '1';
+            }
+        }
+
+        function handleNoClick() {
+            document.getElementById('noModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('noModal').style.display = 'none';
+        }
+
+        function revealEnding() {
+            const proposal = document.getElementById('proposalContainer');
+            const ending = document.getElementById('endingScreen');
+            proposal.style.opacity = '0';
+            setTimeout(() => {
+                proposal.style.display = 'none';
+                ending.style.display = 'block';
+                particles = [];
+                for(let i=0; i<100; i++) particles.push(new Particle(true));
+                setTimeout(() => { ending.style.opacity = '1'; }, 50);
+            }, 800);
+        }
+    </script>
+</body>
+</html>
